@@ -66,7 +66,7 @@ kubectl delete pod-example --image=nginx:stable-alpine --port=80 -n prod
 
 ### por archivo YAML
 
-```ỳaml
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
