@@ -61,7 +61,7 @@ kubectl apply -f ns.yaml
 ## lanzar un pod por línea de comandos
 
 ```bash
-kubectl delete pod-example --image=nginx:stable-alpine --port=80 -n prod
+kubectl run pod-example --image=nginx:stable-alpine --port=80 -n prod
 ```
 
 ### por archivo YAML
