@@ -79,3 +79,66 @@ spec:
     ports:
     - containerPort: 80
 ```
+
+---
+
+## Logs con sidecar
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ejemplo
+spec:
+  containers:
+  - name: ejemplo
+    image: busybox
+    args:
+      - /bin/sh
+      - -c
+      - >
+        while true;
+        do
+        echo "$(date)" >> /var/log/ejemplo.log;
+        sleep 1;
+        done
+    volumeMounts:
+      - name: varlog
+        mountPath: /var/log
+  - name: sidecar
+    image: busybox
+    args: [/bin/sh, -c, 'tail -f /var/log/ejemplo.log']
+    volumeMounts:
+      - name: varlog
+        mountPath: /var/log
+  volumes:
+    - name: varlog
+      emptyDir: {}
+```
+
+## Logs con kibana
+
+- Habilitar un "Ingress": [Addon Ingress](https://microk8s.io/docs/addon-ingress)
+- Configurar un “Ingress” y accedar al mismo (habrá que dar de alta la URL en el servidor DNS) [Kibana](http://kibana.microk.local)
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: kube-system
+  name: kibana
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: "kibana.microk.local"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kibana-logging
+            port:
+              number: 5601
+```
